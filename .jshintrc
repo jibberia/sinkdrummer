@@ -1,8 +1,11 @@
+// http://jshint.com/docs/options/#browser
+// https://github.com/jshint/jshint/blob/master/examples/.jshintrc
+
 {
 	"browser": true, // browser environment defaults
 	"devel": true, // allow console, alert, etc.
 	"quotmark": false, // don't care about double/single quote style
-	"globals": [
+	"predef": [
 		"AudioContext"
 	]
 }
