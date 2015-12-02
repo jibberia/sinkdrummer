@@ -1,0 +1,18 @@
+{
+  "name": "sinkdrummer",
+  "authors": [
+    "Kevin Cox <kevintcox@gmail.com>"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "less": "~2.5.3"
+  }
+}
