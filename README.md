@@ -7,4 +7,10 @@ Installing
 ----------
 
     $ bower install
+    $ ln -s /path/to/samples/ samples
 
+Running
+-------
+
+    $ npm install -g http-server
+    $ http-server
