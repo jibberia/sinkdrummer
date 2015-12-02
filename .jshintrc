@@ -1,0 +1,8 @@
+{
+	"browser": true, // browser environment defaults
+	"devel": true, // allow console, alert, etc.
+	"quotmark": false, // don't care about double/single quote style
+	"globals": [
+		"AudioContext"
+	]
+}
