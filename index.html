@@ -3,6 +3,12 @@
 <html>
 <head>
 	<title>sinkdrummer2016</title>
+	<style type="text/css">
+		button {
+			font-size: 2em;
+			padding: 1em;
+		}
+	</style>
 </head>
 <body>
 <!-- <h1>sinkdrummer2016</h1> -->
@@ -13,6 +19,14 @@
 </audio-->
 
 <button id="play">Play</button>
+<button id="stop">Stop</button>
+
+<br />
+
+<input id="speed" type="range" min="-1200" max="1200" />
+<input id="speed-output" type="text" disabled />
+<br />
+<input id="pitch-reset" type="button" value="Reset Pitch" />
 
 <!-- <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script> -->
 <script type="text/javascript" src="sinkdrummer.js"></script>

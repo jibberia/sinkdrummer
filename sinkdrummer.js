@@ -1,10 +1,19 @@
 "use strict";
 
 var context;
-
+var UI;
+var source = null;
 var sampleUrl = "/samples/sink_all_120bpm_44.wav";
 // var sampleUrl = "/samples/verbme.aif";
 // var sampleUrl = "/samples/SupaTrigga_dry1.mp3";
+
+// var Util = {
+// 	floatToCents: function(float) {
+// 		// -1200   0   1200
+// 		//     0   1.0 2.0
+// 		return float;
+// 	}
+// };
 
 function loadAudio(url, onSuccess) {
 	window.buffer = null;
@@ -43,15 +52,56 @@ function play() {
 		console.error("Buffer is null; cannot play");
 		return;
 	}
-	var source = context.createBufferSource();
+	source = context.createBufferSource();
 	source.buffer = window.buffer;
 	source.connect(context.destination);
-	source.start(0);
+	source.detune.value = UI.speed.value;
+	source.start();
 }
 
-function initUIEventListeners() {
-	var playBtn = document.getElementById("play");
-	playBtn.addEventListener('click', play);
+function stop() {
+	console.log("stop!");
+	if (source === null) {
+		console.error("null audio source");
+		return;
+	}
+	source.stop();
+	source = null;
+}
+
+function setPitch(value) {
+	UI.speedOutput.value = value;
+	if (source !== null) {
+		source.detune.value = value;
+	}
+}
+
+function onPitch(ev) {
+	setPitch(ev.target.value);
+}
+
+function resetPitch() {
+	setPitch(0);
+	UI.speed.value = 0;
+}
+
+function initUI() {
+	window.UI = {};
+
+	UI.play = document.getElementById("play");
+	UI.play.addEventListener('click', play);
+
+	UI.stop = document.getElementById("stop");
+	UI.stop.addEventListener('click', stop);
+
+	UI.speed = document.getElementById("speed");
+	UI.speed.addEventListener('input', onPitch);
+
+	UI.pitchReset = document.getElementById("pitch-reset");
+	UI.pitchReset.addEventListener('click', resetPitch);
+
+	UI.speedOutput = document.getElementById("speed-output");
+	UI.speedOutput.value = 0;
 }
 
 function initAudioContext() {
@@ -70,7 +120,7 @@ function main() {
 		return;
 	}
 	loadAudio(sampleUrl, onAudioLoaded);
-	initUIEventListeners();
+	initUI();
 	console.log("sinkdrummer is ready to roll");
 }
 
