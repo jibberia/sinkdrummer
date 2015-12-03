@@ -3,17 +3,26 @@
 var context;
 var UI;
 var source = null;
-var sampleUrl = "/samples/sink_all_120bpm_44.wav";
+// var sampleUrl = "/samples/sink_all_120bpm_44.wav";
+var sampleUrl = "/samples/cmaj120.wav";
+// var sampleUrl = "/samples/jongly.wav";
 // var sampleUrl = "/samples/verbme.aif";
 // var sampleUrl = "/samples/SupaTrigga_dry1.mp3";
 
-// var Util = {
-// 	floatToCents: function(float) {
-// 		// -1200   0   1200
-// 		//     0   1.0 2.0
-// 		return float;
-// 	}
-// };
+var Util = {
+	floatToCents: function(float) {
+		// -1200   0   1200
+		//     0   1.0 2.0
+		return float;
+	},
+	bpmToSecs: function(bpm) {
+		return 1.0 / (bpm / 60.0);
+	},
+	secsToSamps: function(ms, rate) {
+		rate = rate || 44100;
+		return ms / rate;
+	}
+};
 
 function loadAudio(url, onSuccess) {
 	window.buffer = null;
@@ -47,20 +56,43 @@ function onAudioLoaded(buffer) {
 }
 
 function play() {
-	console.log("play!");
 	if (window.buffer === null) {
 		console.error("Buffer is null; cannot play");
 		return;
 	}
+	if (source !== null) {
+		source.stop();
+	}
+
 	source = context.createBufferSource();
 	source.buffer = window.buffer;
 	source.connect(context.destination);
 	source.detune.value = UI.speed.value;
-	source.start();
+	source.loop = true;
+
+	// console.log("source.buffer.length: " + source.buffer.length);
+	// length is in samples
+	// console.log("source.buffer.length / source.buffer.sampleRate: " + source.buffer.length / source.buffer.sampleRate);
+	// console.log("source.buffer.duration: " + source.buffer.duration);
+
+	var secsPerBeat = Util.bpmToSecs(120);
+	var numBeatsForLoop = 2 + parseInt(Math.random() * 3);
+	var duration = numBeatsForLoop * secsPerBeat;
+	var totalBeats = source.buffer.duration / secsPerBeat;
+	var startBeat = parseInt(Math.random() * (totalBeats - numBeatsForLoop));
+	var startBeatSecs = startBeat * secsPerBeat;
+	var endBeatSecs = startBeatSecs + duration;
+
+	source.loopStart = startBeatSecs;
+	source.loopEnd = endBeatSecs;
+
+	console.log("loop from beat", startBeat, "for", numBeatsForLoop, "beats",
+		        "seconds:", startBeatSecs, "-", endBeatSecs);
+
+	source.start(context.currentTime, startBeatSecs);
 }
 
 function stop() {
-	console.log("stop!");
 	if (source === null) {
 		console.error("null audio source");
 		return;

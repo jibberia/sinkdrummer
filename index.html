@@ -4,7 +4,7 @@
 <head>
 	<title>sinkdrummer2016</title>
 	<style type="text/css">
-		button {
+		button.big {
 			font-size: 2em;
 			padding: 1em;
 		}
@@ -18,15 +18,15 @@
  	<!- - <source src="/samples/SupaTrigga_dry1.mp3" /> - ->
 </audio-->
 
-<button id="play">Play</button>
-<button id="stop">Stop</button>
+<button id="play" class="big">Play</button>
+<button id="stop" class="big">Stop</button>
 
 <br />
 
-<input id="speed" type="range" min="-1200" max="1200" />
+<input id="speed" type="range" min="-2400" max="2400" />
 <input id="speed-output" type="text" disabled />
 <br />
-<input id="pitch-reset" type="button" value="Reset Pitch" />
+<button id="pitch-reset">Reset Pitch</button>
 
 <!-- <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script> -->
 <script type="text/javascript" src="sinkdrummer.js"></script>
