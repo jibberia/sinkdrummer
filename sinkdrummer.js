@@ -1,12 +1,14 @@
 "use strict";
 
 var context;
-// var buffer = null;
+
 var sampleUrl = "/samples/sink_all_120bpm_44.wav";
 // var sampleUrl = "/samples/verbme.aif";
 // var sampleUrl = "/samples/SupaTrigga_dry1.mp3";
 
 var loadAudio = function(url, onSuccess) {
+	window.buffer = null;
+
 	var request = new XMLHttpRequest();
 	request.open('GET', url, true);
 	request.responseType = 'arraybuffer';
@@ -25,36 +27,51 @@ var loadAudio = function(url, onSuccess) {
 				else console.error("failed to decode", url);
 			}
 		);
-
-		// context.decodeAudioData(request.response)
-		// 	.then(function(buffer) {
-		// 		console.log("audio decoded");
-		//   		window.buffer = buffer;
-		// 	});
-		// 	.then, function(e) {
-		// 	console.error(e.err);
-		// });
-
 	};
 
 	request.send();
 };
 
-var onLoaded = function(buffer) {
+var onAudioLoaded = function(buffer) {
 	console.log("loaded", buffer);
+	window.buffer = buffer;
 };
 
-var main = function() {
-	console.log("sinkdrummer says hi");
+var play = function() {
+	console.log("play!");
+	if (window.buffer === null) {
+		console.error("Buffer is null; cannot play");
+		return;
+	}
+	var source = context.createBufferSource();
+	source.buffer = window.buffer;
+	source.connect(context.destination);
+	source.start(0);
+};
+
+var initUIEventListeners = function() {
+	var playBtn = document.getElementById("play");
+	playBtn.addEventListener('click', play);
+};
+
+var initAudioContext = function() {
 	try {
 		window.AudioContext = window.AudioContext || window.webkitAudioContext;
 		window.context = new AudioContext();
 	} catch(e) {
 		console.error("Web Audio is not supported, bailing");
+		return false;
+	}
+	return true;
+};
+
+var main = function() {
+	if (!initAudioContext()) {
 		return;
 	}
-	
-	loadAudio(sampleUrl, onLoaded);
+	loadAudio(sampleUrl, onAudioLoaded);
+	initUIEventListeners();
+	console.log("sinkdrummer is ready to roll");
 };
 
 window.addEventListener('load', main);
