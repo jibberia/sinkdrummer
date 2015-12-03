@@ -4,9 +4,18 @@
 <head>
 	<title>sinkdrummer2016</title>
 	<style type="text/css">
+		body {
+			font-family: Helvetica;
+		}
 		button.big {
 			font-size: 2em;
 			padding: 1em;
+		}
+		input[type=range] {
+			/*width: 2em;*/
+		}
+		input.num {
+			width: 4em;
 		}
 	</style>
 </head>
@@ -18,15 +27,40 @@
  	<!- - <source src="/samples/SupaTrigga_dry1.mp3" /> - ->
 </audio-->
 
+<input id="sample-url" type="text" disabled />
+<br />
+
 <button id="play" class="big">Play</button>
 <button id="stop" class="big">Stop</button>
-
 <br />
+
 
 <input id="speed" type="range" min="-2400" max="2400" />
-<input id="speed-output" type="text" disabled />
-<br />
+<input id="speed-output" class="num" type="text" disabled />
 <button id="pitch-reset">Reset Pitch</button>
+<br />
+
+bpm <input id="bpm" class="num" type="text" value="120" />
+
+<!-- <select id="beat-subdivision">
+	<option value="1.0" selected>&#x2669;</option>
+	<option value="0.5">&#x266A;</option>
+</select>
+ -->
+<input id="bs-q" type="radio" name="beat-subdivision" value="1.0" checked />
+<label for="bs-q">&#x2669;</label>
+&nbsp;&nbsp;
+<input id="bs-e" type="radio" name="beat-subdivision" value="0.5" />
+<label for="bs-e">&#x266A;</label>
+&nbsp;&nbsp;
+<input id="bs-s" type="radio" name="beat-subdivision" value="0.25" />
+<label for="bs-s">&#x266C;</label>
+<!--
+<input type="radio" name="subdivision" value="1.0" checked />
+<label for="">&#x2669;</label>
+&nbsp;&nbsp;
+<input type="radio" name="subdivision" value="0.5" /> &#x266A;
+-->
 
 <!-- <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script> -->
 <script type="text/javascript" src="sinkdrummer.js"></script>

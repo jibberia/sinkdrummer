@@ -4,8 +4,9 @@ var context;
 var UI;
 var source = null;
 // var sampleUrl = "/samples/sink_all_120bpm_44.wav";
-var sampleUrl = "/samples/cmaj120.wav";
-// var sampleUrl = "/samples/jongly.wav";
+// var sampleUrl = "/samples/cmaj120.wav";
+// var sampleUrl = "/samples/gbd01.mp3";
+var sampleUrl = "/samples/jongly.wav";
 // var sampleUrl = "/samples/verbme.aif";
 // var sampleUrl = "/samples/SupaTrigga_dry1.mp3";
 
@@ -75,9 +76,14 @@ function play() {
 	// console.log("source.buffer.length / source.buffer.sampleRate: " + source.buffer.length / source.buffer.sampleRate);
 	// console.log("source.buffer.duration: " + source.buffer.duration);
 
-	var secsPerBeat = Util.bpmToSecs(120);
-	var numBeatsForLoop = 2 + parseInt(Math.random() * 3);
-	var duration = numBeatsForLoop * secsPerBeat;
+	var beatSubdivision = parseFloat(UI.getBeatSubdivisionValue());
+	console.log("beatSubdivision: " + beatSubdivision);
+	var minBeats = 1;
+	var maxBeats = 4;
+
+	var secsPerBeat = Util.bpmToSecs(UI.bpm.value) * beatSubdivision;
+	var numBeatsForLoop = minBeats + parseInt(Math.random() * (maxBeats - minBeats));
+	var duration = (numBeatsForLoop * secsPerBeat) / beatSubdivision;
 	var totalBeats = source.buffer.duration / secsPerBeat;
 	var startBeat = parseInt(Math.random() * (totalBeats - numBeatsForLoop));
 	var startBeatSecs = startBeat * secsPerBeat;
@@ -134,6 +140,15 @@ function initUI() {
 
 	UI.speedOutput = document.getElementById("speed-output");
 	UI.speedOutput.value = 0;
+
+	UI.bpm = document.getElementById("bpm");
+
+	UI.getBeatSubdivisionValue = function() {
+		return document.querySelector("input[name=beat-subdivision]:checked").value;
+	};
+
+	UI.sampleUrl = document.getElementById("sample-url");
+	UI.sampleUrl.value = window.sampleUrl;
 }
 
 function initAudioContext() {
