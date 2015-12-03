@@ -3,10 +3,12 @@
 var context;
 var UI;
 var source = null;
+var gainNode = null;
 // var sampleUrl = "/samples/sink_all_120bpm_44.wav";
+var sampleUrl = "/samples/sink_short_120.wav";
 // var sampleUrl = "/samples/cmaj120.wav";
 // var sampleUrl = "/samples/gbd01.mp3";
-var sampleUrl = "/samples/jongly.wav";
+// var sampleUrl = "/samples/jongly.wav";
 // var sampleUrl = "/samples/verbme.aif";
 // var sampleUrl = "/samples/SupaTrigga_dry1.mp3";
 
@@ -67,7 +69,7 @@ function play() {
 
 	source = context.createBufferSource();
 	source.buffer = window.buffer;
-	source.connect(context.destination);
+	source.connect(gainNode);
 	source.detune.value = UI.speed.value;
 	source.loop = true;
 
@@ -114,17 +116,30 @@ function setPitch(value) {
 	}
 }
 
-function onPitch(ev) {
-	setPitch(ev.target.value);
-}
-
 function resetPitch() {
 	setPitch(0);
 	UI.speed.value = 0;
 }
 
+function setVolume(value) {
+	gainNode.gain.value = value;
+}
+
+function onVolume(ev) {
+	var value = ev.target.value;
+	value *= value;
+	setVolume(value);
+}
+
+function onPitch(ev) {
+	setPitch(ev.target.value);
+}
+
 function initUI() {
 	window.UI = {};
+
+	UI.sampleUrl = document.getElementById("sample-url");
+	UI.sampleUrl.value = window.sampleUrl;
 
 	UI.play = document.getElementById("play");
 	UI.play.addEventListener('click', play);
@@ -147,14 +162,16 @@ function initUI() {
 		return document.querySelector("input[name=beat-subdivision]:checked").value;
 	};
 
-	UI.sampleUrl = document.getElementById("sample-url");
-	UI.sampleUrl.value = window.sampleUrl;
+	UI.volume = document.getElementById("volume");
+	UI.volume.addEventListener('input', onVolume);
 }
 
 function initAudioContext() {
 	try {
 		window.AudioContext = window.AudioContext || window.webkitAudioContext;
-		window.context = new AudioContext();
+		context = new AudioContext();
+		gainNode = context.createGain();
+		gainNode.connect(context.destination);
 	} catch(e) {
 		console.error("Web Audio is not supported, bailing");
 		return false;
