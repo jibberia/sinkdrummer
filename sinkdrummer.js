@@ -3,9 +3,6 @@
 var async = require('async');
 
 var context;
-var UI;
-var source = null;
-var gainNode = null;
 var sinkdrummer = null;
 
 
@@ -98,6 +95,8 @@ var Buffers = {
 
 
 function Sinkdrummer(buffer) {
+	this.id = "sd0";
+	this.UI = null;
 	this.buffer = buffer;
 	this.source = null;
 	this.gainNode = context.createGain();
@@ -119,11 +118,11 @@ Sinkdrummer.prototype.play = function() {
 
 	var source = this.source = context.createBufferSource();
 	source.buffer = this.buffer.audioBuffer;
-	source.detune.value = UI.speed.value;
+	source.detune.value = this.UI.speed.value;
 	source.loop = true;
 	source.connect(this.gainNode);
 
-	var beatSubdivision = parseFloat(UI.getBeatSubdivisionValue());
+	var beatSubdivision = parseFloat(this.UI.getBeatSubdivisionValue());
 	console.log("beatSubdivision: " + beatSubdivision);
 	var minBeats = 1;
 	var maxBeats = 4;
@@ -155,7 +154,7 @@ Sinkdrummer.prototype.stop = function() {
 };
 
 Sinkdrummer.prototype.setPitch = function(value) {
-	UI.speedOutput.value = value;
+	this.UI.speedOutput.value = value;
 	if (this.source !== null) {
 		this.source.detune.value = value;
 	}
@@ -163,59 +162,61 @@ Sinkdrummer.prototype.setPitch = function(value) {
 
 Sinkdrummer.prototype.resetPitch = function() {
 	this.setPitch(0);
-	UI.speed.value = 0;
+	this.UI.speed.value = 0;
 };
 
 Sinkdrummer.prototype.setVolume = function(value) {
 	this.gainNode.gain.value = value;
 };
 
+Sinkdrummer.prototype.initUI = function() {
+	var UI = this.UI = {};
 
-function initUI(callback) {
-	UI = {};
+	var prefix = "#" + this.id + " ";
 
-	UI.sampleUrl = document.getElementById("sample-url");
-	UI.sampleUrl.value = sinkdrummer.buffer.url;
+	UI.sampleUrl = document.querySelector(prefix + ".sample-url");
+	UI.sampleUrl.value = this.buffer.url;
 
-	UI.play = document.getElementById("play");
+	// for the closures below
+	var sinkdrummer = this;
+
+	UI.play = document.querySelector(prefix + ".play");
 	UI.play.addEventListener('click', function onPlay() {
 		sinkdrummer.play();
 	});
 
-	UI.stop = document.getElementById("stop");
+	UI.stop = document.querySelector(prefix + ".stop");
 	UI.stop.addEventListener('click', function onStop() {
 		sinkdrummer.stop();
 	});
 
-	UI.speed = document.getElementById("speed");
+	UI.speed = document.querySelector(prefix + ".speed");
 	UI.speed.addEventListener('input', function onPitch(ev) {
 		sinkdrummer.setPitch(ev.target.value);
 	});
 
-	UI.pitchReset = document.getElementById("pitch-reset");
+	UI.pitchReset = document.querySelector(prefix + ".pitch-reset");
 	UI.pitchReset.addEventListener('click', function onPitchReset() {
 		sinkdrummer.resetPitch();
 	});
 
-	UI.speedOutput = document.getElementById("speed-output");
+	UI.speedOutput = document.querySelector(prefix + ".speed-output");
 	UI.speedOutput.value = 0;
 
-	UI.bpm = document.getElementById("bpm");
-	UI.bpm.value = sinkdrummer.buffer.bpm;
+	UI.bpm = document.querySelector(prefix + ".bpm");
+	UI.bpm.value = this.buffer.bpm;
 
 	UI.getBeatSubdivisionValue = function() {
 		return document.querySelector("input[name=beat-subdivision]:checked").value;
 	};
 
-	UI.volume = document.getElementById("volume");
+	UI.volume = document.querySelector(prefix + ".volume");
 	UI.volume.addEventListener('input', function onVolume(ev) {
 		var value = ev.target.value;
 		value *= value;
 		sinkdrummer.setVolume(value);
 	});
-
-	callback(null);
-}
+};
 
 
 function initAudioContext(callback) {
@@ -238,12 +239,13 @@ function main() {
 		Buffers.init,
 		function testInitSinkdrummer(cb) {
 			var buffer = Buffers.get(0);
-			sinkdrummer = new Sinkdrummer(buffer);
+			console.log("this", this);
+			var sinkdrummer = window.sinkdrummer = new Sinkdrummer(buffer);
+			sinkdrummer.initUI();
 
 			console.log("sinkdrummer is ready to roll");
 			cb(null);
-		},
-		initUI
+		}
 	],
 	function(err) {
 		if (err !== null) {
@@ -256,7 +258,6 @@ window.addEventListener('load', main);
 
 // "Exports" for debugging:
 window.sinkdrummer = sinkdrummer;
-
 window.Sinkdrummer = Sinkdrummer;
 window.Buffer = Buffer;
 window.Buffers = Buffers;

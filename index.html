@@ -17,6 +17,17 @@
 		input.num {
 			width: 4em;
 		}
+		.sample-url {
+			margin-bottom: .5em;
+			width: 100%;
+		}
+		div.sinkdrummer {
+			display: inline-block;
+			background: #f0edca;
+			padding: 1em;
+			margin: 1em;
+			/*box-shadow: 2px 2px 5px #ddd;*/
+		}
 	</style>
 </head>
 <body>
@@ -27,36 +38,36 @@
  	<!- - <source src="/samples/SupaTrigga_dry1.mp3" /> - ->
 </audio-->
 
-<input id="sample-url" type="text" disabled />
-<br />
+<div class="sinkdrummer" id="sd0">
+	<input class="sample-url" type="text" disabled />
+	<br />
 
-<button id="play" class="big">Play</button>
-<button id="stop" class="big">Stop</button>
-<br />
+	<button class="play big">Play</button>
+	<button class="stop big">Stop</button>
+	<br />
 
 
-<input id="speed" type="range" min="-2400" max="2400" />
-<input id="speed-output" class="num" type="text" disabled />
-<button id="pitch-reset">Reset Pitch</button>
-<br />
+	<input class="speed" type="range" min="-2400" max="2400" />
+	<input class="speed-output num" type="text" disabled />
+	<button class="pitch-reset">Reset Pitch</button>
+	<br />
 
-bpm <input id="bpm" class="num" type="text" value="120" disabled />
+	bpm <input class="bpm num" type="text" value="120" disabled />
 
-<input id="bs-q" type="radio" name="beat-subdivision" value="1.0" checked />
-<label for="bs-q">&#x2669;</label>
-&nbsp;&nbsp;
-<input id="bs-e" type="radio" name="beat-subdivision" value="0.5" />
-<label for="bs-e">&#x266A;</label>
-&nbsp;&nbsp;
-<input id="bs-s" type="radio" name="beat-subdivision" value="0.25" />
-<label for="bs-s">&#x266C;</label>
-<br />
+	<input class="bs-q" type="radio" name="beat-subdivision" value="1.0" checked />
+	<label for="bs-q">&#x2669;</label>
+	&nbsp;&nbsp;
+	<input class="bs-e" type="radio" name="beat-subdivision" value="0.5" />
+	<label for="bs-e">&#x266A;</label>
+	&nbsp;&nbsp;
+	<input class="bs-s" type="radio" name="beat-subdivision" value="0.25" />
+	<label for="bs-s">&#x266C;</label>
+	<br />
 
-volume <input id="volume" type="range" value="1" min="0" max="2" step="0.001" />
+	volume <input class="volume" type="range" value="1" min="0" max="2" step="0.001" />
+</div>
 
-<!-- <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script> -->
-<!-- <script type="text/javascript" src="bower_components/async/dist/async.js"></script> -->
-<!-- <script type="text/javascript" src="sinkdrummer.js"></script> -->
+
 <script type="text/javascript" src="bundle.js"></script>
 </body>
 </html>
