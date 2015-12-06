@@ -4,9 +4,20 @@
   "description": "sinkdrummer in web audio",
   "main": "sinkdrummer.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "http-server",
+    "watch": "./node_modules/watchify/bin/cmd.js sinkdrummer.js -o bundle.js -t [ babelify --presets [ react ] ] &",
+    "watch-stop": "kill $(ps | grep watchify | grep -v grep | awk '{ print $1 }')"
   },
   "author": "Kevin Cox <kevintcox@gmail.com>",
   "license": "ISC",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "babel-preset-react": "^6.3.13",
+    "babelify": "^7.2.0",
+    "react": "^0.14.3",
+    "react-dom": "^0.14.3"
+  },
+  "devDependencies": {
+    "watchify": "^3.6.1"
+  }
 }
