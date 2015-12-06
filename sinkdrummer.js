@@ -1,5 +1,7 @@
 "use strict";
 
+var async = require('async');
+
 var context;
 var UI;
 var source = null;

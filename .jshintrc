@@ -7,6 +7,6 @@
 	"quotmark": false, // don't care about double/single quote style
 	"predef": [
 		"AudioContext",
-		"async"
+		"require"
 	]
 }
