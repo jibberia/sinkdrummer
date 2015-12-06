@@ -4,13 +4,6 @@ var context;
 var UI;
 var source = null;
 var gainNode = null;
-// var sampleUrl = "/samples/sink_all_120bpm_44.wav";
-var sampleUrl = "/samples/sink_short_120.wav";
-// var sampleUrl = "/samples/cmaj120.wav";
-// var sampleUrl = "/samples/gbd01.mp3";
-// var sampleUrl = "/samples/jongly.wav";
-// var sampleUrl = "/samples/verbme.aif";
-// var sampleUrl = "/samples/SupaTrigga_dry1.mp3";
 
 
 var Util = {
@@ -44,6 +37,7 @@ var Buffers = {
 			new Buffer("/samples/sink_short_120.wav", 120),
 			new Buffer("/samples/cmaj120.wav", 120),
 			new Buffer("/samples/jongly.wav", 172)
+			// "/samples/SupaTrigga_dry1.mp3"
 		];
 		async.map(buffers, Buffers.load, function onBuffersLoaded(err) {
 			if (err === null) {
@@ -53,7 +47,7 @@ var Buffers = {
 				return callback(err);
 			}
 		});
-	}
+	},
 
 	load: function(buffer, callback) {
 		console.log("called Buffers.load", buffer.url);
@@ -92,54 +86,6 @@ var Buffers = {
 	}
 };
 
-// function initBuffers(callback) {
-// 	var buffers = [
-// 		new Buffer("/samples/sink_short_120.wav", 120),
-// 		new Buffer("/samples/cmaj120.wav", 120),
-// 		new Buffer("/samples/jongly.wav", 172)
-// 	];
-// 	async.map(buffers, Buffers.load, function onBuffersLoaded(err) {//, results) {
-// 		if (err === null) {
-// 			return callback(null);
-// 		} else {
-// 			console.error("Error loading buffer(s)", err);
-// 			return callback(err);
-// 		}
-// 	});
-// }
-
-
-// function loadAudio(url, onSuccess) {
-// 	window.buffer = null;
-
-// 	var request = new XMLHttpRequest();
-// 	request.open('GET', url, true);
-// 	request.responseType = 'arraybuffer';
-
-// 	// Decode asynchronously
-// 	request.onload = function() {
-// 		console.log("request loaded, now decode...");
-
-// 		context.decodeAudioData(request.response,
-// 			function(buffer) {
-// 				console.log("successfully decoded", url);
-// 				onSuccess(buffer);
-// 			},
-// 			function(e) {
-// 				if (e) console.error("actual exception", e);
-// 				else console.error("failed to decode", url);
-// 			}
-// 		);
-// 	};
-
-// 	request.send();
-// }
-
-// function onAudioLoaded(buffer) {
-// 	console.log("loaded", buffer);
-// 	window.buffer = buffer;
-// }
-
 function play() {
 	if (window.buffer === null) {
 		console.error("Buffer is null; cannot play");
@@ -154,11 +100,6 @@ function play() {
 	source.connect(gainNode);
 	source.detune.value = UI.speed.value;
 	source.loop = true;
-
-	// console.log("source.buffer.length: " + source.buffer.length);
-	// length is in samples
-	// console.log("source.buffer.length / source.buffer.sampleRate: " + source.buffer.length / source.buffer.sampleRate);
-	// console.log("source.buffer.duration: " + source.buffer.duration);
 
 	var beatSubdivision = parseFloat(UI.getBeatSubdivisionValue());
 	console.log("beatSubdivision: " + beatSubdivision);
@@ -252,13 +193,11 @@ function initUI(callback) {
 
 function initAudioContext(callback) {
 	try {
-		window.AudioContext = window.AudioContext || window.webkitAudioContext;
-		context = new AudioContext();
+		context = new (window.AudioContext || window.webkitAudioContext)();
 		gainNode = context.createGain();
 		gainNode.connect(context.destination);
 	} catch(e) {
 		console.error("Web Audio is not supported, bailing");
-		// return false;
 		return callback("Web Audio is not supported, bailing");
 	}
 	return callback(null);
