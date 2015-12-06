@@ -4,6 +4,7 @@ var context;
 var UI;
 var source = null;
 var gainNode = null;
+var sinkdrummer = null;
 
 
 var Util = {
@@ -25,12 +26,12 @@ var Util = {
 function Buffer(url, bpm) {
 	this.url = url;
 	this.bpm = bpm;
-	this.audioData = null;
+	this.audioBuffer = null;
 }
 
 var Buffers = {
 	_buffers: {},
-	count: 0,
+	_bufferList: [],
 
 	init: function(callback) {
 		var buffers = [
@@ -50,7 +51,7 @@ var Buffers = {
 	},
 
 	load: function(buffer, callback) {
-		console.log("called Buffers.load", buffer.url);
+		console.log("Buffers.load", buffer.url);
 		var request = new XMLHttpRequest();
 		request.open('GET', buffer.url, true);
 		request.responseType = 'arraybuffer';
@@ -60,9 +61,9 @@ var Buffers = {
 			window.context.decodeAudioData(request.response,
 				function(audioData) {
 					console.log("successfully decoded", buffer.url);
-					buffer.audioData = audioData;
+					buffer.audioBuffer = audioData;
 					Buffers._buffers[buffer.url] = buffer;
-					Buffers.count++;
+					Buffers._bufferList.push(buffer);
 					return callback(null, buffer);
 				},
 				function(e) {
@@ -76,27 +77,44 @@ var Buffers = {
 		request.send();
 	},
 
-	get: function(url) {
-		var buf = Buffers._buffers[url];
-		if (buf !== undefined) {
+	/// arg can be numeric index or URL
+	get: function(arg) {
+		var buf = null;
+		if (typeof arg === "number") {
+			buf = Buffers._bufferList[arg];
+		} else if (typeof arg === "string") {
+			buf = Buffers._buffers[arg];
+		}
+
+		if (buf !== undefined && buf !== null) {
 			return buf;
 		} else {
-			console.error("Buffers does not contain", url);
+			console.error("Buffers does not contain", arg);
 		}
 	}
 };
 
-function play() {
-	if (window.buffer === null) {
-		console.error("Buffer is null; cannot play");
+
+function Sinkdrummer(buffer) {
+	this.buffer = buffer;
+	this.source = null;
+	console.log("sinkdrummer constructor", this);
+}
+
+Sinkdrummer.prototype.play = function() {
+	console.log("play", this);
+	if (this.buffer === null) {
+		console.error("buffer is null; cannot play");
 		return;
 	}
-	if (source !== null) {
-		source.stop();
+	if (this.source !== null) {
+		console.log("this.source is not null");
+		window.src = this.source;
+		this.source.stop();
 	}
 
-	source = context.createBufferSource();
-	source.buffer = window.buffer;
+	var source = this.source = context.createBufferSource();
+	source.buffer = this.buffer.audioBuffer;
 	source.connect(gainNode);
 	source.detune.value = UI.speed.value;
 	source.loop = true;
@@ -106,7 +124,7 @@ function play() {
 	var minBeats = 1;
 	var maxBeats = 4;
 
-	var secsPerBeat = Util.bpmToSecs(UI.bpm.value) * beatSubdivision;
+	var secsPerBeat = Util.bpmToSecs(this.buffer.bpm) * beatSubdivision;
 	var numBeatsForLoop = minBeats + parseInt(Math.random() * (maxBeats - minBeats));
 	var duration = (numBeatsForLoop * secsPerBeat) / beatSubdivision;
 	var totalBeats = source.buffer.duration / secsPerBeat;
@@ -121,79 +139,85 @@ function play() {
 		        "seconds:", startBeatSecs, "-", endBeatSecs);
 
 	source.start(context.currentTime, startBeatSecs);
-}
+};
 
-function stop() {
-	if (source === null) {
+Sinkdrummer.prototype.stop = function() {
+	if (this.source === null) {
 		console.error("null audio source");
 		return;
 	}
-	source.stop();
-	source = null;
-}
+	this.source.stop();
+	this.source = null;
+};
 
-function setPitch(value) {
+Sinkdrummer.prototype.setPitch = function(value) {
 	UI.speedOutput.value = value;
 	if (source !== null) {
 		source.detune.value = value;
 	}
-}
+};
 
-function resetPitch() {
-	setPitch(0);
+Sinkdrummer.prototype.resetPitch = function() {
+	this.setPitch(0);
 	UI.speed.value = 0;
-}
+};
 
-function setVolume(value) {
-	gainNode.gain.value = value;
-}
+Sinkdrummer.prototype.setVolume = function(value) {
+	this.gainNode.gain.value = value;
+};
 
-function onVolume(ev) {
-	var value = ev.target.value;
-	value *= value;
-	setVolume(value);
-}
-
-function onPitch(ev) {
-	setPitch(ev.target.value);
-}
 
 function initUI(callback) {
 	window.UI = {};
 
 	UI.sampleUrl = document.getElementById("sample-url");
-	UI.sampleUrl.value = window.sampleUrl;
+	UI.sampleUrl.value = sinkdrummer.buffer.url;
 
 	UI.play = document.getElementById("play");
-	UI.play.addEventListener('click', play);
+	UI.play.addEventListener('click', function onPlay() {
+		sinkdrummer.play();
+	});
 
 	UI.stop = document.getElementById("stop");
-	UI.stop.addEventListener('click', stop);
+	UI.stop.addEventListener('click', function onStop() {
+		sinkdrummer.stop();
+	});
 
 	UI.speed = document.getElementById("speed");
-	UI.speed.addEventListener('input', onPitch);
+	UI.speed.addEventListener('input', function onPitch(ev) {
+		sinkdrummer.setPitch(ev.target.value);
+	});
 
 	UI.pitchReset = document.getElementById("pitch-reset");
-	UI.pitchReset.addEventListener('click', resetPitch);
+	UI.pitchReset.addEventListener('click', function onPitchReset() {
+		sinkdrummer.resetPitch();
+	});
 
 	UI.speedOutput = document.getElementById("speed-output");
 	UI.speedOutput.value = 0;
 
 	UI.bpm = document.getElementById("bpm");
+	UI.bpm.value = sinkdrummer.buffer.bpm;
 
 	UI.getBeatSubdivisionValue = function() {
 		return document.querySelector("input[name=beat-subdivision]:checked").value;
 	};
 
 	UI.volume = document.getElementById("volume");
-	UI.volume.addEventListener('input', onVolume);
+	UI.volume.addEventListener('input', function onVolume(ev) {
+		var value = ev.target.value;
+		value *= value;
+		sinkdrummer.setVolume(value);
+	});
 
 	callback(null);
 }
 
+
 function initAudioContext(callback) {
 	try {
-		context = new (window.AudioContext || window.webkitAudioContext)();
+		var AudioContext = window.AudioContext || window.webkitAudioContext;
+		context = new AudioContext();
 		gainNode = context.createGain();
 		gainNode.connect(context.destination);
 	} catch(e) {
@@ -201,18 +225,21 @@ function initAudioContext(callback) {
 		return callback("Web Audio is not supported, bailing");
 	}
 	return callback(null);
-	// return true;
 }
+
 
 function main() {
 	async.series([
 		initAudioContext,
 		Buffers.init,
-		initUI,
-		function(cb) {
+		function initSinkdrummer(cb) {
+			var buffer = Buffers.get(0);
+			sinkdrummer = new Sinkdrummer(buffer);
+
 			console.log("sinkdrummer is ready to roll");
 			cb(null);
-		}
+		},
+		initUI
 	], function(err) {
 		if (err !== null) {
 			console.error("async.series err", err);
