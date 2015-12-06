@@ -232,7 +232,7 @@ function main() {
 	async.series([
 		initAudioContext,
 		Buffers.init,
-		function initSinkdrummer(cb) {
+		function testInitSinkdrummer(cb) {
 			var buffer = Buffers.get(0);
 			sinkdrummer = new Sinkdrummer(buffer);
 
@@ -240,7 +240,8 @@ function main() {
 			cb(null);
 		},
 		initUI
-	], function(err) {
+	],
+	function(err) {
 		if (err !== null) {
 			console.error("async.series err", err);
 		}
