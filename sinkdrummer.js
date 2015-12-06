@@ -26,6 +26,7 @@ function Buffer(url, bpm) {
 	this.url = url;
 	this.bpm = bpm;
 	this.audioBuffer = null;
+	this.index = -1;
 }
 
 var Buffers = {
@@ -62,6 +63,7 @@ var Buffers = {
 					console.log("successfully decoded", buffer.url);
 					buffer.audioBuffer = audioData;
 					Buffers._buffers[buffer.url] = buffer;
+					buffer.index = Buffers._bufferList.length;
 					Buffers._bufferList.push(buffer);
 					return callback(null, buffer);
 				},
@@ -89,7 +91,18 @@ var Buffers = {
 			return buf;
 		} else {
 			console.error("Buffers does not contain", arg);
+			return null;
 		}
+	},
+
+	getSelectInnerHTML: function() {
+		var lines = [];
+		var i = 0;
+		this._bufferList.forEach(function(buffer) {
+			lines.push('<option value="'+i+'">'+buffer.url+'</option>');
+			i++;
+		});
+		return lines.join("");
 	}
 };
 
@@ -98,11 +111,36 @@ function Sinkdrummer(buffer) {
 	this.id = "sd0";
 	this.UI = null;
 	this.buffer = buffer;
-	this.source = null;
+	this.source = context.createBufferSource();
+	this.isPlaying = false;
 	this.gainNode = context.createGain();
 	this.gainNode.connect(context.destination);
 	console.log("sinkdrummer constructor", this);
 }
+
+Sinkdrummer.prototype._getNewLoopPoints = function() {
+	var beatSubdivision = parseFloat(this.UI.getBeatSubdivisionValue());
+	// console.log("beatSubdivision: " + beatSubdivision);
+	var minBeats = 1;
+	var maxBeats = 4;
+
+	var secsPerBeat = Util.bpmToSecs(this.buffer.bpm) * beatSubdivision;
+	var numBeatsForLoop = minBeats + parseInt(Math.random() * (maxBeats - minBeats));
+	var duration = (numBeatsForLoop * secsPerBeat) / beatSubdivision;
+	var totalBeats = this.source.buffer.duration / secsPerBeat;
+	var startBeat = parseInt(Math.random() * (totalBeats - numBeatsForLoop));
+	var startBeatSecs = startBeat * secsPerBeat;
+	var endBeatSecs = startBeatSecs + duration;
+
+	console.log("loop from beat", startBeat, "for", numBeatsForLoop, "beats",
+		        "seconds:", startBeatSecs, "-", endBeatSecs);
+
+	return {
+		start: startBeatSecs,
+		end: endBeatSecs,
+		duration: duration
+	};
+};
 
 Sinkdrummer.prototype.play = function() {
 	console.log("play", this);
@@ -110,38 +148,31 @@ Sinkdrummer.prototype.play = function() {
 		console.error("buffer is null; cannot play");
 		return;
 	}
-	if (this.source !== null) {
+	if (this.source !== null && this.isPlaying) {
 		console.log("this.source is not null");
-		window.src = this.source;
-		this.source.stop();
+		this.stop();
 	}
 
-	var source = this.source = context.createBufferSource();
+	var source = this.source;
 	source.buffer = this.buffer.audioBuffer;
 	source.detune.value = this.UI.speed.value;
-	source.loop = true;
+	source.loop = false;
 	source.connect(this.gainNode);
 
-	var beatSubdivision = parseFloat(this.UI.getBeatSubdivisionValue());
-	console.log("beatSubdivision: " + beatSubdivision);
-	var minBeats = 1;
-	var maxBeats = 4;
+	var loopPoints = this._getNewLoopPoints();
+	source.loopStart = loopPoints.start;
+	source.loopEnd = loopPoints.end;
 
-	var secsPerBeat = Util.bpmToSecs(this.buffer.bpm) * beatSubdivision;
-	var numBeatsForLoop = minBeats + parseInt(Math.random() * (maxBeats - minBeats));
-	var duration = (numBeatsForLoop * secsPerBeat) / beatSubdivision;
-	var totalBeats = source.buffer.duration / secsPerBeat;
-	var startBeat = parseInt(Math.random() * (totalBeats - numBeatsForLoop));
-	var startBeatSecs = startBeat * secsPerBeat;
-	var endBeatSecs = startBeatSecs + duration;
+	var self = this;
+	source.onended = function() {
+		console.log("source ended!");
+		if (self.UI.newLoopPointsOnRepeat.checked) {
+			self.play();
+		}
+	};
 
-	source.loopStart = startBeatSecs;
-	source.loopEnd = endBeatSecs;
-
-	console.log("loop from beat", startBeat, "for", numBeatsForLoop, "beats",
-		        "seconds:", startBeatSecs, "-", endBeatSecs);
-
-	source.start(context.currentTime, startBeatSecs);
+	source.start(context.currentTime, loopPoints.start, loopPoints.duration);
+	this.isPlaying = true;
 };
 
 Sinkdrummer.prototype.stop = function() {
@@ -149,8 +180,13 @@ Sinkdrummer.prototype.stop = function() {
 		console.error("null audio source");
 		return;
 	}
+	if (!this.isPlaying) {
+		return;
+	}
+	console.log("stop", this);
 	this.source.stop();
-	this.source = null;
+	this.source = context.createBufferSource();
+	this.isPlaying = false;
 };
 
 Sinkdrummer.prototype.setPitch = function(value) {
@@ -169,16 +205,41 @@ Sinkdrummer.prototype.setVolume = function(value) {
 	this.gainNode.gain.value = value;
 };
 
+// Sinkdrummer.prototype.setRepeatNewLoopPoints = function(newLoopPointsOnRepeat) {
+// 	console.log("setRepeatNewLoopPoints", this);
+// 	var source = this.source;
+// 	if (newLoopPointsOnRepeat) {
+// 		source.onended = function() {
+// 			console.log("source ended!");
+// 		};
+// 	} else {
+// 		source.onended = null;
+// 		console.log("nulled out onended");
+// 	}
+// };
+
+Sinkdrummer.prototype.setBufferByIndex = function(bufferIndex) {
+	console.log("setBuffer", bufferIndex);
+	this.buffer = Buffers.get(bufferIndex);
+};
+
 Sinkdrummer.prototype.initUI = function() {
 	var UI = this.UI = {};
 
 	var prefix = "#" + this.id + " ";
 
-	UI.sampleUrl = document.querySelector(prefix + ".sample-url");
-	UI.sampleUrl.value = this.buffer.url;
-
 	// for the closures below
 	var sinkdrummer = this;
+
+	// UI.sampleUrl = document.querySelector(prefix + ".sample-url");
+	// UI.sampleUrl.value = this.buffer.url;
+
+	UI.sample = document.querySelector(prefix + ".sample");
+	UI.sample.innerHTML =  Buffers.getSelectInnerHTML();
+	UI.sample.selectedIndex = this.buffer.index;
+	UI.sample.addEventListener('change', function onSampleChanged(ev) {
+		sinkdrummer.setBufferByIndex(parseInt(ev.target.value));
+	});
 
 	UI.play = document.querySelector(prefix + ".play");
 	UI.play.addEventListener('click', function onPlay() {
@@ -187,8 +248,15 @@ Sinkdrummer.prototype.initUI = function() {
 
 	UI.stop = document.querySelector(prefix + ".stop");
 	UI.stop.addEventListener('click', function onStop() {
+		UI.newLoopPointsOnRepeat.checked = false;
 		sinkdrummer.stop();
 	});
+
+	UI.newLoopPointsOnRepeat = document.querySelector(prefix + ".new-loop-points");
+	// console.log("UI.newLoopPointsOnRepeat", UI.newLoopPointsOnRepeat);
+	// UI.newLoopPointsOnRepeat.addEventListener('change', function onNewLoopPoints(ev) {
+	// 	sinkdrummer.setRepeatNewLoopPoints(ev.target.checked);
+	// });
 
 	UI.speed = document.querySelector(prefix + ".speed");
 	UI.speed.addEventListener('input', function onPitch(ev) {

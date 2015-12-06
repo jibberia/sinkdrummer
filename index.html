@@ -13,6 +13,7 @@
 		button.big {
 			font-size: 2em;
 			padding: 1em;
+			margin-top: .5em;
 		}
 		input[type=range] {
 			/*width: 2em;*/
@@ -20,11 +21,15 @@
 		input.num {
 			width: 4em;
 		}
-		.sample-url {
+		input.new-loop-points {
+			transform: scale(2);
+			margin: 1em;
+		}
+/*		.sample-url {
 			margin-bottom: .5em;
 			width: 100%;
 		}
-
+*/
 		#sinkdrummers {
 			display: inline-block;
 		}
@@ -47,13 +52,16 @@
 
 <div id="sinkdrummers">
 	<div class="sinkdrummer" id="sd0">
-		<input class="sample-url" type="text" disabled />
+		<!-- <input class="sample-url" type="text" disabled /> -->
+		<select class="sample"></select>
 		<br />
 
 		<button class="play big">Play</button>
 		<button class="stop big">Stop</button>
 		<br />
 
+		<input class="new-loop-points" type="checkbox" checked /> new loop points every repeat
+		<br />
 
 		<input class="speed" type="range" min="-2400" max="2400" />
 		<input class="speed-output num" type="text" disabled />
