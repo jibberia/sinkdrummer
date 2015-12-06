@@ -5,19 +5,15 @@
   "main": "sinkdrummer.js",
   "scripts": {
     "server": "./node_modules/http-server/bin/http-server",
-    "build": "./node_modules/browserify/bin/cmd.js sinkdrummer.js --debug -o bundle.js -t [ babelify --presets [ react ] ]",
-    "watch": "./node_modules/watchify/bin/cmd.js sinkdrummer.js --debug -o bundle.js -t [ babelify --presets [ react ] ] &",
+    "build": "./node_modules/browserify/bin/cmd.js sinkdrummer.js --debug -o bundle.js",
+    "watch": "./node_modules/watchify/bin/cmd.js sinkdrummer.js --debug -o bundle.js &",
     "watch-stop": "kill $(ps | grep watchify | grep -v grep | awk '{ print $1 }')"
   },
   "author": "Kevin Cox <kevintcox@gmail.com>",
   "license": "ISC",
   "private": true,
   "dependencies": {
-    "async": "^1.5.0",
-    "babel-preset-react": "^6.3.13",
-    "babelify": "^7.2.0",
-    "react": "^0.14.3",
-    "react-dom": "^0.14.3"
+    "async": "^1.5.0"
   },
   "devDependencies": {
     "browserify": "^12.0.1",

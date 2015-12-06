@@ -246,7 +246,6 @@ function addSinkdrummer() {
 
 function initGlobalUI(callback) {
 	var addSinkdrummerButton = document.getElementById("add-sinkdrummer");
-	console.log("addSinkdrummer", addSinkdrummer);
 	addSinkdrummerButton.addEventListener('click', addSinkdrummer);
 	callback(null);
 }
