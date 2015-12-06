@@ -100,6 +100,8 @@ var Buffers = {
 function Sinkdrummer(buffer) {
 	this.buffer = buffer;
 	this.source = null;
+	this.gainNode = context.createGain();
+	this.gainNode.connect(context.destination);
 	console.log("sinkdrummer constructor", this);
 }
 
@@ -117,9 +119,9 @@ Sinkdrummer.prototype.play = function() {
 
 	var source = this.source = context.createBufferSource();
 	source.buffer = this.buffer.audioBuffer;
-	source.connect(gainNode);
 	source.detune.value = UI.speed.value;
 	source.loop = true;
+	source.connect(this.gainNode);
 
 	var beatSubdivision = parseFloat(UI.getBeatSubdivisionValue());
 	console.log("beatSubdivision: " + beatSubdivision);
@@ -154,8 +156,8 @@ Sinkdrummer.prototype.stop = function() {
 
 Sinkdrummer.prototype.setPitch = function(value) {
 	UI.speedOutput.value = value;
-	if (source !== null) {
-		source.detune.value = value;
+	if (this.source !== null) {
+		this.source.detune.value = value;
 	}
 };
 
@@ -220,8 +222,8 @@ function initAudioContext(callback) {
 	try {
 		var AudioContext = window.AudioContext || window.webkitAudioContext;
 		context = new AudioContext();
-		gainNode = context.createGain();
-		gainNode.connect(context.destination);
+		// gainNode = context.createGain();
+		// gainNode.connect(context.destination);
 	} catch(e) {
 		console.error("Web Audio is not supported, bailing");
 		return callback("Web Audio is not supported, bailing");
@@ -251,3 +253,11 @@ function main() {
 }
 
 window.addEventListener('load', main);
+
+// "Exports" for debugging:
+window.sinkdrummer = sinkdrummer;
+
+window.Sinkdrummer = Sinkdrummer;
+window.Buffer = Buffer;
+window.Buffers = Buffers;
+window.Util = Util;

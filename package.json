@@ -4,9 +4,9 @@
   "description": "sinkdrummer in web audio",
   "main": "sinkdrummer.js",
   "scripts": {
-    "start": "./node_modules/http-server/bin/http-server",
-    "build": "./node_modules/browserify/bin/cmd.js sinkdrummer.js -o bundle.js -t [ babelify --presets [ react ] ]",
-    "watch": "./node_modules/watchify/bin/cmd.js sinkdrummer.js -o bundle.js -t [ babelify --presets [ react ] ] &",
+    "server": "./node_modules/http-server/bin/http-server",
+    "build": "./node_modules/browserify/bin/cmd.js sinkdrummer.js --debug -o bundle.js -t [ babelify --presets [ react ] ]",
+    "watch":   "./node_modules/watchify/bin/cmd.js sinkdrummer.js --debug -o bundle.js -t [ babelify --presets [ react ] ] &",
     "watch-stop": "kill $(ps | grep watchify | grep -v grep | awk '{ print $1 }')"
   },
   "author": "Kevin Cox <kevintcox@gmail.com>",
