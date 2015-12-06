@@ -39,7 +39,23 @@ var Buffers = {
 	_buffers: {},
 	count: 0,
 
-	load: function(buffer, callback) {//, audioCtx) {
+	init: function(callback) {
+		var buffers = [
+			new Buffer("/samples/sink_short_120.wav", 120),
+			new Buffer("/samples/cmaj120.wav", 120),
+			new Buffer("/samples/jongly.wav", 172)
+		];
+		async.map(buffers, Buffers.load, function onBuffersLoaded(err) {
+			if (err === null) {
+				return callback(null);
+			} else {
+				console.error("Error loading buffer(s)", err);
+				return callback(err);
+			}
+		});
+	}
+
+	load: function(buffer, callback) {
 		console.log("called Buffers.load", buffer.url);
 		var request = new XMLHttpRequest();
 		request.open('GET', buffer.url, true);
@@ -76,53 +92,53 @@ var Buffers = {
 	}
 };
 
-function initBuffers(callback) {
-	var buffers = [
-		new Buffer("/samples/sink_short_120.wav", 120),
-		new Buffer("/samples/cmaj120.wav", 120),
-		new Buffer("/samples/jongly.wav", 172)
-	];
-	async.map(buffers, Buffers.load, function onBuffersLoaded(err) {//, results) {
-		if (err === null) {
-			return callback(null);
-		} else {
-			console.error("Error loading buffer(s)", err);
-			return callback(err);
-		}
-	});
-}
+// function initBuffers(callback) {
+// 	var buffers = [
+// 		new Buffer("/samples/sink_short_120.wav", 120),
+// 		new Buffer("/samples/cmaj120.wav", 120),
+// 		new Buffer("/samples/jongly.wav", 172)
+// 	];
+// 	async.map(buffers, Buffers.load, function onBuffersLoaded(err) {//, results) {
+// 		if (err === null) {
+// 			return callback(null);
+// 		} else {
+// 			console.error("Error loading buffer(s)", err);
+// 			return callback(err);
+// 		}
+// 	});
+// }
 
 
-function loadAudio(url, onSuccess) {
-	window.buffer = null;
+// function loadAudio(url, onSuccess) {
+// 	window.buffer = null;
 
-	var request = new XMLHttpRequest();
-	request.open('GET', url, true);
-	request.responseType = 'arraybuffer';
+// 	var request = new XMLHttpRequest();
+// 	request.open('GET', url, true);
+// 	request.responseType = 'arraybuffer';
 
-	// Decode asynchronously
-	request.onload = function() {
-		console.log("request loaded, now decode...");
+// 	// Decode asynchronously
+// 	request.onload = function() {
+// 		console.log("request loaded, now decode...");
 
-		context.decodeAudioData(request.response,
-			function(buffer) {
-				console.log("successfully decoded", url);
-				onSuccess(buffer);
-			},
-			function(e) {
-				if (e) console.error("actual exception", e);
-				else console.error("failed to decode", url);
-			}
-		);
-	};
+// 		context.decodeAudioData(request.response,
+// 			function(buffer) {
+// 				console.log("successfully decoded", url);
+// 				onSuccess(buffer);
+// 			},
+// 			function(e) {
+// 				if (e) console.error("actual exception", e);
+// 				else console.error("failed to decode", url);
+// 			}
+// 		);
+// 	};
 
-	request.send();
-}
+// 	request.send();
+// }
 
-function onAudioLoaded(buffer) {
-	console.log("loaded", buffer);
-	window.buffer = buffer;
-}
+// function onAudioLoaded(buffer) {
+// 	console.log("loaded", buffer);
+// 	window.buffer = buffer;
+// }
 
 function play() {
 	if (window.buffer === null) {
@@ -252,7 +268,7 @@ function initAudioContext(callback) {
 function main() {
 	async.series([
 		initAudioContext,
-		initBuffers,
+		Buffers.init,
 		initUI,
 		function(cb) {
 			console.log("sinkdrummer is ready to roll");
