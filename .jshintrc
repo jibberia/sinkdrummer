@@ -6,6 +6,7 @@
 	"devel": true, // allow console, alert, etc.
 	"quotmark": false, // don't care about double/single quote style
 	"predef": [
-		"AudioContext"
+		"AudioContext",
+		"async"
 	]
 }
