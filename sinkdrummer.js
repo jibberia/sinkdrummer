@@ -58,7 +58,7 @@ var Buffers = {
 
 		// Decode asynchronously
 		request.onload = function() {
-			window.context.decodeAudioData(request.response,
+			context.decodeAudioData(request.response,
 				function(audioData) {
 					console.log("successfully decoded", buffer.url);
 					buffer.audioBuffer = audioData;
@@ -168,7 +168,7 @@ Sinkdrummer.prototype.setVolume = function(value) {
 
 
 function initUI(callback) {
-	window.UI = {};
+	UI = {};
 
 	UI.sampleUrl = document.getElementById("sample-url");
 	UI.sampleUrl.value = sinkdrummer.buffer.url;
