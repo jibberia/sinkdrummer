@@ -7,6 +7,9 @@
 		body {
 			font-family: Helvetica;
 		}
+		button#add-sinkdrummer {
+			font-size: 2em;
+		}
 		button.big {
 			font-size: 2em;
 			padding: 1em;
@@ -21,11 +24,15 @@
 			margin-bottom: .5em;
 			width: 100%;
 		}
+
+		#sinkdrummers {
+			display: inline-block;
+		}
 		div.sinkdrummer {
 			display: inline-block;
 			background: #f0edca;
 			padding: 1em;
-			margin: 1em;
+			margin: 1em 0 0 1em;
 			/*box-shadow: 2px 2px 5px #ddd;*/
 		}
 	</style>
@@ -38,35 +45,38 @@
  	<!- - <source src="/samples/SupaTrigga_dry1.mp3" /> - ->
 </audio-->
 
-<div class="sinkdrummer" id="sd0">
-	<input class="sample-url" type="text" disabled />
-	<br />
+<div id="sinkdrummers">
+	<div class="sinkdrummer" id="sd0">
+		<input class="sample-url" type="text" disabled />
+		<br />
 
-	<button class="play big">Play</button>
-	<button class="stop big">Stop</button>
-	<br />
+		<button class="play big">Play</button>
+		<button class="stop big">Stop</button>
+		<br />
 
 
-	<input class="speed" type="range" min="-2400" max="2400" />
-	<input class="speed-output num" type="text" disabled />
-	<button class="pitch-reset">Reset Pitch</button>
-	<br />
+		<input class="speed" type="range" min="-2400" max="2400" />
+		<input class="speed-output num" type="text" disabled />
+		<button class="pitch-reset">Reset Pitch</button>
+		<br />
 
-	bpm <input class="bpm num" type="text" value="120" disabled />
+		bpm <input class="bpm num" type="text" value="120" disabled />
 
-	<input class="bs-q" type="radio" name="beat-subdivision" value="1.0" checked />
-	<label for="bs-q">&#x2669;</label>
-	&nbsp;&nbsp;
-	<input class="bs-e" type="radio" name="beat-subdivision" value="0.5" />
-	<label for="bs-e">&#x266A;</label>
-	&nbsp;&nbsp;
-	<input class="bs-s" type="radio" name="beat-subdivision" value="0.25" />
-	<label for="bs-s">&#x266C;</label>
-	<br />
+		<input class="bs-q" type="radio" name="beat-subdivision" value="1.0" checked />
+		<label for="bs-q">&#x2669;</label>
+		&nbsp;&nbsp;
+		<input class="bs-e" type="radio" name="beat-subdivision" value="0.5" />
+		<label for="bs-e">&#x266A;</label>
+		&nbsp;&nbsp;
+		<input class="bs-s" type="radio" name="beat-subdivision" value="0.25" />
+		<label for="bs-s">&#x266C;</label>
+		<br />
 
-	volume <input class="volume" type="range" value="1" min="0" max="2" step="0.001" />
+		volume <input class="volume" type="range" value="1" min="0" max="2" step="0.001" />
+	</div>
 </div>
 
+<button id="add-sinkdrummer">+</button>
 
 <script type="text/javascript" src="bundle.js"></script>
 </body>

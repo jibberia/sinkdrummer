@@ -232,6 +232,24 @@ function initAudioContext(callback) {
 	return callback(null);
 }
 
+function addSinkdrummer() {
+	var sd = new Sinkdrummer(Buffers.get(1));
+	var dom = document.querySelector("#sinkdrummers .sinkdrummer:last-child").cloneNode(true);
+	var newId = "sd" + (parseInt(dom.id.replace("sd", "")) + 1);
+	console.log("newId", newId);
+	dom.id = sd.id = newId;
+
+	document.getElementById("sinkdrummers").appendChild(dom);
+	sd.initUI();
+	return sd;
+}
+
+function initGlobalUI(callback) {
+	var addSinkdrummerButton = document.getElementById("add-sinkdrummer");
+	console.log("addSinkdrummer", addSinkdrummer);
+	addSinkdrummerButton.addEventListener('click', addSinkdrummer);
+	callback(null);
+}
 
 function main() {
 	async.series([
@@ -245,7 +263,8 @@ function main() {
 
 			console.log("sinkdrummer is ready to roll");
 			cb(null);
-		}
+		},
+		initGlobalUI
 	],
 	function(err) {
 		if (err !== null) {
@@ -262,3 +281,4 @@ window.Sinkdrummer = Sinkdrummer;
 window.Buffer = Buffer;
 window.Buffers = Buffers;
 window.Util = Util;
+window.addSinkdrummer = addSinkdrummer;
