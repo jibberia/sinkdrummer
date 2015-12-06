@@ -1,0 +1,12 @@
+{
+  "name": "sinkdrummer2016",
+  "version": "0.1.0",
+  "description": "sinkdrummer in web audio",
+  "main": "sinkdrummer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kevin Cox <kevintcox@gmail.com>",
+  "license": "ISC",
+  "private": true
+}
