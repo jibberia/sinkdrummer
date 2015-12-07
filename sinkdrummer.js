@@ -219,8 +219,9 @@ Sinkdrummer.prototype.setVolume = function(value) {
 // };
 
 Sinkdrummer.prototype.setBufferByIndex = function(bufferIndex) {
-	console.log("setBuffer", bufferIndex);
+	console.log("setBufferByIndex", bufferIndex);
 	this.buffer = Buffers.get(bufferIndex);
+	this.initUI();
 };
 
 Sinkdrummer.prototype.initUI = function() {
@@ -324,7 +325,6 @@ function main() {
 		Buffers.init,
 		function testInitSinkdrummer(cb) {
 			var buffer = Buffers.get(0);
-			console.log("this", this);
 			var sinkdrummer = window.sinkdrummer = new Sinkdrummer(buffer);
 			sinkdrummer.initUI();
 
