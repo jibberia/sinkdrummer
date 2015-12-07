@@ -148,7 +148,6 @@ Sinkdrummer.prototype.play = function() {
 		return;
 	}
 	if (this.source !== null && this.isPlaying) {
-		console.log("this.source is not null");
 		this.stop();
 	}
 
@@ -284,7 +283,7 @@ function initAudioContext(callback) {
 }
 
 function addSinkdrummer() {
-	var sd = new Sinkdrummer(Buffers.get(1));
+	var sd = new Sinkdrummer(Buffers.get(0));
 	var sds = document.getElementById("sinkdrummers");
 	var dom = sds.children[sds.children.length-2];
 
@@ -303,6 +302,9 @@ function addSinkdrummer() {
 function initGlobalUI(callback) {
 	var addSinkdrummerButton = document.getElementById("add-sinkdrummer");
 	addSinkdrummerButton.addEventListener('click', addSinkdrummer);
+	var sd = document.getElementById("sinkdrummers").children[0];
+	addSinkdrummerButton.style.width = sd.offsetWidth + "px";
+	addSinkdrummerButton.style.height = sd.offsetHeight + "px";
 	callback(null);
 }
 
