@@ -56,7 +56,6 @@ var Buffers = {
 		request.open('GET', buffer.url, true);
 		request.responseType = 'arraybuffer';
 
-		// Decode asynchronously
 		request.onload = function() {
 			context.decodeAudioData(request.response,
 				function(audioData) {
@@ -205,19 +204,6 @@ Sinkdrummer.prototype.setVolume = function(value) {
 	this.gainNode.gain.value = value;
 };
 
-// Sinkdrummer.prototype.setRepeatNewLoopPoints = function(newLoopPointsOnRepeat) {
-// 	console.log("setRepeatNewLoopPoints", this);
-// 	var source = this.source;
-// 	if (newLoopPointsOnRepeat) {
-// 		source.onended = function() {
-// 			console.log("source ended!");
-// 		};
-// 	} else {
-// 		source.onended = null;
-// 		console.log("nulled out onended");
-// 	}
-// };
-
 Sinkdrummer.prototype.setBufferByIndex = function(bufferIndex) {
 	console.log("setBufferByIndex", bufferIndex);
 	this.buffer = Buffers.get(bufferIndex);
@@ -232,45 +218,40 @@ Sinkdrummer.prototype.initUI = function() {
 	// for the closures below
 	var sinkdrummer = this;
 
-	// UI.sampleUrl = document.querySelector(prefix + ".sample-url");
-	// UI.sampleUrl.value = this.buffer.url;
-
 	UI.sample = document.querySelector(prefix + ".sample");
 	UI.sample.innerHTML =  Buffers.getSelectInnerHTML();
 	UI.sample.selectedIndex = this.buffer.index;
-	UI.sample.addEventListener('change', function onSampleChanged(ev) {
+	UI.sample.onchange = function onSampleChanged(ev) {
 		sinkdrummer.setBufferByIndex(parseInt(ev.target.value));
-	});
+	};
 
 	UI.play = document.querySelector(prefix + ".play");
-	UI.play.addEventListener('click', function onPlay() {
+	UI.play.onclick = function onPlay() {
 		sinkdrummer.play();
-	});
+	};
 
 	UI.stop = document.querySelector(prefix + ".stop");
-	UI.stop.addEventListener('click', function onStop() {
+	UI.stop.onclick = function onStop() {
 		UI.newLoopPointsOnRepeat.checked = false;
 		sinkdrummer.stop();
-	});
+	};
 
 	UI.newLoopPointsOnRepeat = document.querySelector(prefix + ".new-loop-points");
-	// console.log("UI.newLoopPointsOnRepeat", UI.newLoopPointsOnRepeat);
-	// UI.newLoopPointsOnRepeat.addEventListener('change', function onNewLoopPoints(ev) {
-	// 	sinkdrummer.setRepeatNewLoopPoints(ev.target.checked);
-	// });
+	UI.newLoopPointsOnRepeat.checked = true;
 
 	UI.speed = document.querySelector(prefix + ".speed");
-	UI.speed.addEventListener('input', function onPitch(ev) {
+	UI.speed.value = 0;
+	UI.speed.oninput = function onPitch(ev) {
 		sinkdrummer.setPitch(ev.target.value);
-	});
+	};
 
 	UI.pitchReset = document.querySelector(prefix + ".pitch-reset");
-	UI.pitchReset.addEventListener('click', function onPitchReset() {
+	UI.pitchReset.onclick = function onPitchReset() {
 		sinkdrummer.resetPitch();
-	});
+	};
 
 	UI.speedOutput = document.querySelector(prefix + ".speed-output");
-	UI.speedOutput.value = 0;
+	UI.speedOutput.value = UI.speed.value;
 
 	UI.bpm = document.querySelector(prefix + ".bpm");
 	UI.bpm.value = this.buffer.bpm;
@@ -280,11 +261,12 @@ Sinkdrummer.prototype.initUI = function() {
 	};
 
 	UI.volume = document.querySelector(prefix + ".volume");
-	UI.volume.addEventListener('input', function onVolume(ev) {
+	UI.volume.value = 1;
+	UI.volume.oninput = function onVolume(ev) {
 		var value = ev.target.value;
 		value *= value;
 		sinkdrummer.setVolume(value);
-	});
+	};
 };
 
 
