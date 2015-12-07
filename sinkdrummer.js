@@ -131,7 +131,7 @@ Sinkdrummer.prototype._getNewLoopPoints = function() {
 	var startBeatSecs = startBeat * secsPerBeat;
 	var endBeatSecs = startBeatSecs + duration;
 
-	console.log("loop from beat", startBeat, "for", numBeatsForLoop, "beats",
+	console.log(this.id, "will loop from beat", startBeat, "for", numBeatsForLoop, "beats.",
 		        "seconds:", startBeatSecs, "-", endBeatSecs);
 
 	return {
@@ -153,8 +153,8 @@ Sinkdrummer.prototype.play = function() {
 
 	var source = this.source;
 	source.buffer = this.buffer.audioBuffer;
-	source.detune.value = this.UI.speed.value;
-	source.loop = false;
+	source.playbackRate.value = this.UI.speed.value;
+	source.loop = true;
 	source.connect(this.gainNode);
 
 	var loopPoints = this._getNewLoopPoints();
@@ -187,16 +187,16 @@ Sinkdrummer.prototype.stop = function() {
 	this.isPlaying = false;
 };
 
-Sinkdrummer.prototype.setPitch = function(value) {
+Sinkdrummer.prototype.setSpeed = function(value) {
 	this.UI.speedOutput.value = value;
 	if (this.source !== null) {
-		this.source.detune.value = value;
+		this.source.playbackRate.value = value;
 	}
 };
 
-Sinkdrummer.prototype.resetPitch = function() {
-	this.setPitch(0);
-	this.UI.speed.value = 0;
+Sinkdrummer.prototype.resetSpeed = function() {
+	this.setSpeed(1);
+	this.UI.speed.value = 1;
 };
 
 Sinkdrummer.prototype.setVolume = function(value) {
@@ -239,14 +239,14 @@ Sinkdrummer.prototype.initUI = function() {
 	UI.newLoopPointsOnRepeat.checked = true;
 
 	UI.speed = document.querySelector(prefix + ".speed");
-	UI.speed.value = 0;
-	UI.speed.oninput = function onPitch(ev) {
-		sinkdrummer.setPitch(ev.target.value);
+	UI.speed.value = 1;
+	UI.speed.oninput = function onSpeed(ev) {
+		sinkdrummer.setSpeed(ev.target.value);
 	};
 
-	UI.pitchReset = document.querySelector(prefix + ".pitch-reset");
-	UI.pitchReset.onclick = function onPitchReset() {
-		sinkdrummer.resetPitch();
+	UI.speedReset = document.querySelector(prefix + ".speed-reset");
+	UI.speedReset.onclick = function onSpeedReset() {
+		sinkdrummer.resetSpeed();
 	};
 
 	UI.speedOutput = document.querySelector(prefix + ".speed-output");
@@ -273,8 +273,10 @@ function initAudioContext(callback) {
 	try {
 		var AudioContext = window.AudioContext || window.webkitAudioContext;
 		context = new AudioContext();
-		// gainNode = context.createGain();
-		// gainNode.connect(context.destination);
+
+		// var panner = context.createPanner();
+		// panner.panningModel = 'HRTF';
+
 	} catch(e) {
 		console.error("Web Audio is not supported, bailing");
 		return callback("Web Audio is not supported, bailing");
@@ -302,9 +304,11 @@ function addSinkdrummer() {
 function initGlobalUI(callback) {
 	var addSinkdrummerButton = document.getElementById("add-sinkdrummer");
 	addSinkdrummerButton.addEventListener('click', addSinkdrummer);
+
 	var sd = document.getElementById("sinkdrummers").children[0];
 	addSinkdrummerButton.style.width = sd.offsetWidth + "px";
 	addSinkdrummerButton.style.height = sd.offsetHeight + "px";
+	
 	callback(null);
 }
 

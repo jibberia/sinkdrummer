@@ -18,7 +18,7 @@
 		input.num {
 			width: 4em;
 		}
-		input.new-loop-points {
+		input[type=checkbox] {
 			transform: scale(2);
 			margin: 1em;
 		}
@@ -45,6 +45,11 @@
 	</style>
 </head>
 <body>
+
+<div id="global-controls">
+	volume <input class="volume" type="range" value="1" min="0" max="2" step="0.001" />
+</div>
+
 <div id="sinkdrummers">
 	<div class="sinkdrummer" id="sd0">
 		<!-- <input class="sample-url" type="text" disabled /> -->
@@ -57,10 +62,12 @@
 
 		<input class="new-loop-points" type="checkbox" checked /> new loop points every repeat
 		<br />
+		<input class="loop" type="checkbox" checked /> loop
+		<br />
 
-		<input class="speed" type="range" min="-2400" max="2400" />
+		<input class="speed" type="range" min="0" max="4.0" step="0.25" value="1" />
 		<input class="speed-output num" type="text" disabled />
-		<button class="pitch-reset">Reset Pitch</button>
+		<button class="speed-reset">Reset Speed</button>
 		<br />
 
 		bpm <input class="bpm num" type="text" value="120" disabled />
@@ -76,6 +83,7 @@
 		<br />
 
 		volume <input class="volume" type="range" value="1" min="0" max="2" step="0.001" />
+		<!-- pan <input class="pan" type="range" value="1" min="0" max="2" step="0.001" /> -->
 	</div>
 	<button id="add-sinkdrummer">+</button>
 </div>
