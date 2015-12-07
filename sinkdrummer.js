@@ -285,12 +285,17 @@ function initAudioContext(callback) {
 
 function addSinkdrummer() {
 	var sd = new Sinkdrummer(Buffers.get(1));
-	var dom = document.querySelector("#sinkdrummers .sinkdrummer:last-child").cloneNode(true);
+	var sds = document.getElementById("sinkdrummers");
+	var dom = sds.children[sds.children.length-2];
+
+	console.log("dom", dom);
+	dom = dom.cloneNode(true);
 	var newId = "sd" + (parseInt(dom.id.replace("sd", "")) + 1);
 	console.log("newId", newId);
 	dom.id = sd.id = newId;
 
-	document.getElementById("sinkdrummers").appendChild(dom);
+	document.getElementById("sinkdrummers").insertBefore(dom, document.getElementById("add-sinkdrummer"));
+
 	sd.initUI();
 	return sd;
 }

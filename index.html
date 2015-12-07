@@ -7,9 +7,6 @@
 		body {
 			font-family: Helvetica;
 		}
-		button#add-sinkdrummer {
-			font-size: 2em;
-		}
 		button.big {
 			font-size: 2em;
 			padding: 1em;
@@ -25,31 +22,28 @@
 			transform: scale(2);
 			margin: 1em;
 		}
-/*		.sample-url {
-			margin-bottom: .5em;
-			width: 100%;
-		}
-*/
+
 		#sinkdrummers {
 			display: inline-block;
 		}
-		div.sinkdrummer {
+		div.sinkdrummer, button#add-sinkdrummer {
 			display: inline-block;
+			float: left;
 			background: #f0edca;
 			padding: 1em;
 			margin: 1em 0 0 1em;
-			/*box-shadow: 2px 2px 5px #ddd;*/
+			border: 0;
+			font-size: 16px;
+		}
+		button#add-sinkdrummer {
+			width: 303px;
+			height: 270px;
+			font-weight: bold;
+			outline: none;
 		}
 	</style>
 </head>
 <body>
-<!-- <h1>sinkdrummer2016</h1> -->
-
-<!--audio controls>
-	<source src="/samples/sink_all_120bpm_44.wav" />
- 	<!- - <source src="/samples/SupaTrigga_dry1.mp3" /> - ->
-</audio-->
-
 <div id="sinkdrummers">
 	<div class="sinkdrummer" id="sd0">
 		<!-- <input class="sample-url" type="text" disabled /> -->
@@ -82,9 +76,8 @@
 
 		volume <input class="volume" type="range" value="1" min="0" max="2" step="0.001" />
 	</div>
+	<button id="add-sinkdrummer">+</button>
 </div>
-
-<button id="add-sinkdrummer">+</button>
 
 <script type="text/javascript" src="bundle.js"></script>
 </body>
