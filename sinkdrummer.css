@@ -1,20 +1,35 @@
+* {
+	color: white;
+}
+
 body {
 	font-family: Helvetica;
+	background: #777;
 }
-button.big {
-	font-size: 2em;
-	padding: 1em;
-	margin-top: .5em;
+input[type=text], button {
+	background: linear-gradient(#6e6e6e, #666);
+	border: none;
+	outline: none;
+	padding: 4px;
 }
-input[type=range] {
-	/*width: 2em;*/
-}
-input.num {
-	width: 4em;
+button:active {
+	background: linear-gradient(#666, #777);
+	box-shadow: 0 0 16px -4px #555 inset;
+	color: #eee;
 }
 input[type=checkbox] {
 	transform: scale(2);
 	margin: 1em;
+}
+button.big {
+	border: none;
+	font-size: 2em;
+	padding: 1em;
+	margin-top: .5em;
+	border-radius: 3px;
+}
+input.num {
+	width: 3em;
 }
 
 #sinkdrummers {
@@ -23,11 +38,12 @@ input[type=checkbox] {
 div.sinkdrummer, button#add-sinkdrummer {
 	display: inline-block;
 	float: left;
-	background: #f0edca;
+	background: #555555;
 	padding: 1em;
 	margin: 1em 0 0 1em;
 	border: 0;
 	font-size: 16px;
+	border-radius: 2px;
 }
 button#add-sinkdrummer {
 	/* width and height get reset by js at runtime */
